@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -92,7 +92,10 @@ public class NodeService {
         this.refreshServerList();
         if (this.serverListCallback!=null)
             try {
-                this.serverListCallback.run();
+                CompletableFuture.supplyAsync(()->{
+                    this.serverListCallback.run();
+                    return null;
+                }, ForkJoinPool.commonPool());
             }catch(Exception ex){
                 logger.error("Error while calling callback", ex);
             }
