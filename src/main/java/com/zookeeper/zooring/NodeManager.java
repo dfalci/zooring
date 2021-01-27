@@ -1,4 +1,4 @@
-package com.visual.zookeeper;
+package com.zookeeper.zooring;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
@@ -47,8 +47,7 @@ public class NodeManager implements Closeable{
     }
 
     public void onDataUpdated(CuratorCacheListener.Type type, ChildData oldData, ChildData data) {
-        logger.debug("{} - {} - {}", type, oldData, data);
-        System.out.println(type+" - "+oldData+" - "+data);
+        logger.info("{} - {} - {}", type, oldData, data);
         this.onUpdated.accept(data);
     }
 
