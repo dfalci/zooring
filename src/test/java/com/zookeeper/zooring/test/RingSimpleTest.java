@@ -12,7 +12,7 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class RingSimpleTest {
-    private final Logger logger = LoggerFactory.getLogger(RingSimpleTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(RingSimpleTest.class);
 
     @Test
     void singleNode() throws InterruptedException {
@@ -74,9 +74,6 @@ public class RingSimpleTest {
         for (int i=0;i<10000;i++) {
             String target = UUID.randomUUID().toString();
             Set<String> targets = map.entrySet().stream().map(el -> el.getValue().getServer(target)).collect(Collectors.toSet());
-            if (targets.size() != 1){
-                System.out.println("erro no "+target);
-            }
             assert targets.size() == 1;
         }
         map.values().forEach(el->el.disconnect());
@@ -85,9 +82,9 @@ public class RingSimpleTest {
 
     @Test
     void testRingNodes(){
-        for (int i=0;i<10;i++){
-            System.out.println(RingUtils.fromString(UUID.randomUUID().toString()));
-        }
+        for (int i=0;i<10;i++)
+            logger.info(RingUtils.fromString(UUID.randomUUID().toString()).toString());
+
     }
 
 
