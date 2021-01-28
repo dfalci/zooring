@@ -11,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
@@ -127,6 +124,14 @@ public class NodeService {
         }finally {
             this.lock.writeLock().unlock();
         }
+    }
+
+    public Set<String> getFingerAddresses(){
+        return this.fingerTable.nodes.stream().map(el->el.address).collect(Collectors.toSet());
+    }
+
+    public Set<String> getFingerIds(){
+        return this.fingerTable.nodes.stream().map(el->el.id).collect(Collectors.toSet());
     }
 
     public String getServer(String resourceId){

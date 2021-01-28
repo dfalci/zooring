@@ -45,7 +45,6 @@ public class RingSimpleTest {
             NodeService s = new NodeService("localhost:2181", null, UUID.randomUUID().toString(), thisId)
                     .withServerListCallback(()->{
                         if (init.contains(thisId)) {
-                            System.out.println("liberou "+thisId);
                             latch.countDown();
                         }
                         init.remove(thisId);
@@ -54,45 +53,32 @@ public class RingSimpleTest {
             Assertions.assertTrue(s.connect());
             map.put(String.valueOf(address), s);
         }
-        logger.info("Server connected");
         latch.await(15, TimeUnit.SECONDS);
-        logger.info("all servers connected");
+        logger.info("all servers are connected");
 
         final CountDownLatch latch2 = new CountDownLatch(1);
         ForkJoinPool.commonPool().execute(()->{
-            long start = System.currentTimeMillis();
-//            map.values().forEach(v->v.);
+            while (true){
+                if (map.entrySet().stream().anyMatch(el->el.getValue().getFingerAddresses().size() != services)) {
+                    try { Thread.sleep(500); } catch (Exception ex) { }
+                }else{
+                    break;
+                }
+            }
+            latch2.countDown();
         });
 
+        latch2.await(15, TimeUnit.SECONDS);
 
 
-        String target = UUID.randomUUID().toString();
-
-        Thread.sleep(5000);
-
-        Set<String> targets = map.entrySet().stream().map(el->el.getValue().getServer(target)).collect(Collectors.toSet());
-        assert targets.size() == 1;
+        //check whether all servers are responding the same server for a given set of random resource ids
+        for (int i=0;i<10000;i++) {
+            String target = UUID.randomUUID().toString();
+            Set<String> targets = map.entrySet().stream().map(el -> el.getValue().getServer(target)).collect(Collectors.toSet());
+            assert targets.size() == 1;
+        }
         map.values().forEach(el->el.disconnect());
 
-
-//        Map<String, Integer> count = new HashMap<>();
-//        map.keySet().forEach(k->count.put(k, 0));
-//
-//
-//        int misses = 0;
-//        for (int i=0;i<15000;i++) {
-//            String server = String.valueOf(ThreadLocalRandom.current().nextInt(0, services));
-//            String resource = UUID.randomUUID().toString();
-//            String target = map.get(server).getServer(resource);
-//            if (target != null)
-//                count.put(target, count.getOrDefault(target, 0)+1);
-//            else
-//                misses++;
-//
-//        }
-//
-//        Assertions.assertFalse(count.values().stream().anyMatch(el->el.equals(0)));
-//        Assertions.assertTrue(misses == 0);
     }
 
     @Test
