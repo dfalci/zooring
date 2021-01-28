@@ -70,11 +70,13 @@ public class RingSimpleTest {
 
         latch2.await(15, TimeUnit.SECONDS);
 
-
         //check whether all servers are responding the same server for a given set of random resource ids
         for (int i=0;i<10000;i++) {
             String target = UUID.randomUUID().toString();
             Set<String> targets = map.entrySet().stream().map(el -> el.getValue().getServer(target)).collect(Collectors.toSet());
+            if (targets.size() != 1){
+                System.out.println("erro no "+target);
+            }
             assert targets.size() == 1;
         }
         map.values().forEach(el->el.disconnect());
