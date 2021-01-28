@@ -47,7 +47,7 @@ public class CommManager implements Closeable{
     }
 
     public void onDataUpdated(CuratorCacheListener.Type type, ChildData oldData, ChildData data) {
-        logger.info("{} - {} - {}", type, oldData, data);
+        logger.debug("{} - {} - {}", type, oldData, data);
         this.onUpdated.accept(data);
     }
 
@@ -55,22 +55,27 @@ public class CommManager implements Closeable{
         pen.start();
         try{
             cache.start();
+            logger.debug("started");
         }catch ( Exception e ){
             ThreadUtils.checkInterrupted(e);
             Throwables.propagate(e);
+            logger.error("error while starting", e);
         }
     }
 
     public void setThisData(byte[] data){
         try{
             pen.setData(data);
+            logger.debug("data has been set");
         }catch ( Exception e ){
             ThreadUtils.checkInterrupted(e);
             Throwables.propagate(e);
+            logger.error("error setting data");
         }
     }
 
     public void close(){
+        logger.debug("closing quietly");
         CloseableUtils.closeQuietly(cache);
         CloseableUtils.closeQuietly(pen);
     }

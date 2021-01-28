@@ -71,6 +71,7 @@ public class NodeService {
     }
 
     public boolean connect(){
+        logger.info("connecting");
         this.c = CuratorFrameworkFactory.newClient(this.connectionString, this.policy);
 
         this.c.getUnhandledErrorListenable().addListener((String message, Throwable e) ->{
@@ -79,14 +80,14 @@ public class NodeService {
 
         this.c.getConnectionStateListenable().addListener((f, state)->{
             this.ready.set(state.isConnected());
-            logger.info("{} - NewState : {} - Ready {}", this.id, state, state.isConnected());
+            logger.debug("{} - NewState : {} - Ready {}", this.id, state, state.isConnected());
             if (this.connectedCallback != null)
                 this.connectedCallback.accept(state);
         });
 
         this.c.getCuratorListenable().addListener((client, event) ->{
             this.ready.set(!event.getType().equals(CuratorEventType.CLOSING));
-            logger.info("{} - Event : {} - Ready {}", this.id, event.getType(), this.ready.get());
+            logger.debug("{} - Event : {} - Ready {}", this.id, event.getType(), this.ready.get());
         });
 
         this.c.start();
@@ -99,7 +100,7 @@ public class NodeService {
             logger.error("COULD NOT CONNECT TO ZOOKEEPER");
             return false;
         }
-        this.m = new CommManager(c, this.membersPath, this.id.toString(), this.data.getBytes(), this::onServerListChanged);
+        this.m = new CommManager(c, this.membersPath, this.id, this.data.getBytes(), this::onServerListChanged);
         this.m.start();
         return true;
     }
@@ -108,10 +109,7 @@ public class NodeService {
         this.refreshServerList();
         if (this.serverListCallback!=null)
             try {
-                CompletableFuture.supplyAsync(()->{
-                    this.serverListCallback.run();
-                    return null;
-                }, ForkJoinPool.commonPool());
+                CompletableFuture.runAsync(()-> this.serverListCallback.run(), ForkJoinPool.commonPool());
             }catch(Exception ex){
                 logger.error("Error while calling callback", ex);
             }
@@ -134,7 +132,7 @@ public class NodeService {
         return this.fingerTable.nodes.stream().map(el->el.id).collect(Collectors.toSet());
     }
 
-    public String getServer(String resourceId){
+    public String getNodeAddress(String resourceId){
         if (!this.ready.get())
             throw new IllegalStateException("invalid connection state");
 
@@ -156,7 +154,7 @@ public class NodeService {
      * @param data
      * @return
      */
-    public boolean isCurrentServer(String data){
+    public boolean isCurrentNode(String data){
         return this.data.equals(data);
     }
 
@@ -166,7 +164,7 @@ public class NodeService {
      * @return
      */
     public List<String> checkRemovables(List<String> resources){
-        return resources.stream().map(this::getServer).filter(el->!isCurrentServer(el)).collect(Collectors.toList());
+        return resources.stream().map(this::getNodeAddress).filter(el->!isCurrentNode(el)).collect(Collectors.toList());
     }
 
     class NodeAddress{
