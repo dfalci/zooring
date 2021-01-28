@@ -4,7 +4,7 @@ Minimal implementation of a DHT ring (Distributed Hash Table) of instances using
 
 The eventually consistent process verifies the currently connected nodes from the ring and assigns one of them as the responsible for any resource request. It monitors the node's availability across the ring, redistributing the load when a node fails or when new nodes join the ring.
 
-#####more later
+##### more later
 
 #### Hello world
 
