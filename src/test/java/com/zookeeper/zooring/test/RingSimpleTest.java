@@ -82,8 +82,9 @@ public class RingSimpleTest {
 
     @Test
     void testRingNodes(){
-        for (int i=0;i<10;i++)
-            logger.info(RingUtils.fromString(UUID.randomUUID().toString()).toString());
+        for (int i=0;i<10;i++) {
+            System.out.println(RingUtils.fromString(UUID.randomUUID().toString()).toString());
+        }
 
     }
 

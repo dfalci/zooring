@@ -32,7 +32,7 @@ public class NodeService {
     private NodeManager m;
     private final AtomicBoolean ready = new AtomicBoolean(false);
 
-    private String membersPath = "/membros";
+    private String membersPath = "/members";
 
     private final FingerTable fingerTable;
     private ReadWriteLock lock = new ReentrantReadWriteLock();
