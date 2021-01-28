@@ -181,6 +181,7 @@ public class NodeService {
 
     class FingerTable{
         private final List<NodeAddress> nodes = new ArrayList<>();
+        private static final int N_AUTOBALANCE = 8;
 
         void fill(Map<String, byte[]> items){
             this.nodes.clear();
@@ -197,11 +198,15 @@ public class NodeService {
             if (this.nodes.size() == 1)
                 return this.nodes.get(0);
 
-            for(NodeAddress n : this.nodes){
-                if (n.rep.compareTo(target) > 0)
-                    return n;
+            if (this.nodes.size() <= N_AUTOBALANCE+1){
+                return this.nodes.get(target.mod(BigInteger.valueOf(this.nodes.size())).intValue());
+            }else {
+                for (NodeAddress n : this.nodes) {
+                    if (n.rep.compareTo(target) > 0)
+                        return n;
+                }
+                return this.nodes.get(this.nodes.size() - 1);
             }
-            return this.nodes.get(this.nodes.size()-1);
         }
     }
 }
