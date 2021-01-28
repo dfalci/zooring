@@ -9,11 +9,11 @@ The eventually consistent process verifies the currently connected nodes from th
 #### Hello world
 
 ```java
- NodeService s = new NodeService("zookeeperhost:zookeeperport", null, UUID.randomUUID().toString(), "current host address. ex.: 10.1.0.15")
-    .withServerListCallback(()->{
-        System.out.println("Connection list has changed in zookeeper");
-    })
-    .withPath("/members");//path where to connect
+NodeService s = new NodeService("zookeeperhost:zookeeperport", null, UUID.randomUUID().toString(), "current host address. ex.: 10.1.0.15")
+   .withServerListCallback(()->{
+       System.out.println("Connection list has changed in zookeeper");
+   })
+   .withPath("/members");//path where to connect
 s.connect();
 //retrieves the address from the instance which is responsible for a given resource key
 s.getServer(UUID.randomUUID().toString()); 
