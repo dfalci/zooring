@@ -24,19 +24,19 @@ import java.util.function.Consumer;
 
 import static org.apache.curator.framework.recipes.cache.CuratorCacheAccessor.parentPathFilter;
 
-public class NodeManager implements Closeable{
-    private final Logger logger = LoggerFactory.getLogger(NodeManager.class);
+public class CommManager implements Closeable{
+    private final Logger logger = LoggerFactory.getLogger(CommManager.class);
     private final PersistentNode pen;
     private final CuratorCacheBridge cache;
     private final String membershipPath;
     private final String thisId;
     private final Consumer<ChildData> onUpdated;
 
-    public NodeManager(CuratorFramework client, String membershipPath, String thisId, Consumer<ChildData> onUpdated){
+    public CommManager(CuratorFramework client, String membershipPath, String thisId, Consumer<ChildData> onUpdated){
         this(client, membershipPath, thisId, CuratorFrameworkFactory.getLocalAddress(), onUpdated);
     }
 
-    public NodeManager(CuratorFramework client, String membershipPath, String thisId, byte[] payload, Consumer<ChildData> onUpdated){
+    public CommManager(CuratorFramework client, String membershipPath, String thisId, byte[] payload, Consumer<ChildData> onUpdated){
         this.onUpdated = onUpdated;
         this.membershipPath = membershipPath;
         this.thisId = Preconditions.checkNotNull(thisId, "thisId cannot be null");

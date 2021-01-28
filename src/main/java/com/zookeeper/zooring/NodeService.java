@@ -29,7 +29,7 @@ public class NodeService {
     private final String data;
 
     private CuratorFramework c;
-    private NodeManager m;
+    private CommManager m;
     private final AtomicBoolean ready = new AtomicBoolean(false);
 
     private String membersPath = "/members";
@@ -99,7 +99,7 @@ public class NodeService {
             logger.error("COULD NOT CONNECT TO ZOOKEEPER");
             return false;
         }
-        this.m = new NodeManager(c, this.membersPath, this.id.toString(), this.data.getBytes(), this::onServerListChanged);
+        this.m = new CommManager(c, this.membersPath, this.id.toString(), this.data.getBytes(), this::onServerListChanged);
         this.m.start();
         return true;
     }
